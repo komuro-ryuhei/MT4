@@ -16,33 +16,31 @@ struct Vector3 final {
 	float y;
 	float z;
 
+	// コンストラクタ
+	Vector3(float x = 0, float y = 0, float z = 0) : x(x), y(y), z(z) {}
+
 	// + 演算子のオーバーロード
 	Vector3 operator+(const Vector3& other) const { return Vector3(x + other.x, y + other.y, z + other.z); }
 
-	// - 演算子のオーバーロード
+	// - 演算子のオーバーロード（二項）
 	Vector3 operator-(const Vector3& other) const { return Vector3(x - other.x, y - other.y, z - other.z); }
 
-	// + オペレーターのオーバーロード
-	Vector3& operator+(const float& other) {
-		x = x + other;
-		y = y + other;
-		z = z + other;
-		return *this;
-	}
-
-	// + オペレーターのオーバーロード
-	Vector3& operator+=(const float& other) {
-		x = x += other;
-		y = y += other;
-		z = z += other;
-		return *this;
-	}
+	// - 演算子のオーバーロード（単項）
+	Vector3 operator-() const { return Vector3(-x, -y, -z); }
 
 	// += オペレーターのオーバーロード
 	Vector3& operator+=(const Vector3& other) {
 		x += other.x;
 		y += other.y;
 		z += other.z;
+		return *this;
+	}
+
+	// -= オペレーターのオーバーロード
+	Vector3& operator-=(const Vector3& other) {
+		x -= other.x;
+		y -= other.y;
+		z -= other.z;
 		return *this;
 	}
 
@@ -55,7 +53,7 @@ struct Vector3 final {
 	}
 
 	// Vector3 と float の掛け算のオペレーター
-	Vector3 operator*(float scalar) { return Vector3{x * scalar, y * scalar, z * scalar}; }
+	Vector3 operator*(float scalar) const { return Vector3(x * scalar, y * scalar, z * scalar); }
 };
 
 /// <summary>
@@ -66,4 +64,7 @@ struct Vector4 final {
 	float y;
 	float z;
 	float w;
+
+	// コンストラクタ
+	Vector4(float x = 0, float y = 0, float z = 0, float w = 0) : x(x), y(y), z(z), w(w) {}
 };
