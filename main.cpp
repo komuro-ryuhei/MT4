@@ -3,6 +3,38 @@
 
 const char kWindowTitle[] = "コムロ_リュウヘイ";
 
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
+	// クォータニオンの内積を計算
+	float dot = q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
+
+	// 内積が負の場合、反対方向のクォータニオンを利用
+	Quaternion q1Adjusted = q1;
+	if (dot < 0.0f) {
+		dot = -dot;
+		q1Adjusted = {-q1.x, -q1.y, -q1.z, -q1.w};
+	}
+
+	// 補間用のスケール
+	float scale0, scale1;
+
+	// 内積が1に近い場合（角度が非常に小さい場合）、線形補間を利用
+	if (dot > 0.9995f) {
+		scale0 = 1.0f - t;
+		scale1 = t;
+	} else {
+		// θを計算
+		float theta = acosf(dot);
+		float sinTheta = sinf(theta);
+
+		// スケール係数を計算
+		scale0 = sinf((1.0f - t) * theta) / sinTheta;
+		scale1 = sinf(t * theta) / sinTheta;
+	}
+
+	// 補間結果を計算
+	return {scale0 * q0.x + scale1 * q1Adjusted.x, scale0 * q0.y + scale1 * q1Adjusted.y, scale0 * q0.z + scale1 * q1Adjusted.z, scale0 * q0.w + scale1 * q1Adjusted.w};
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -25,8 +57,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓更新処理ここから
 		///
+		// クォータニオンの初期設定
+		Quaternion rotation0 = MakeRotateAxisAngleQuaternion({0.71f, 0.71f, 0.0f}, 0.3f);
+		Quaternion rotation1 = MakeRotateAxisAngleQuaternion({0.71f, 0.0f, 0.71f}, 3.141592f);
 
-
+		Quaternion interpolate0 = Slerp(rotation0, rotation1, 0.0f);
+		Quaternion interpolate1 = Slerp(rotation0, rotation1, 0.3f);
+		Quaternion interpolate2 = Slerp(rotation0, rotation1, 0.5f);
+		Quaternion interpolate3 = Slerp(rotation0, rotation1, 0.7f);
+		Quaternion interpolate4 = Slerp(rotation0, rotation1, 1.0f);
 
 		///
 		/// ↑更新処理ここまで
@@ -36,7 +75,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-
+		QuaternionScreenPrintf(0, 0, interpolate0, "interpolate0");
+		QuaternionScreenPrintf(0, 20, interpolate1, "interpolate1");
+		QuaternionScreenPrintf(0, 40, interpolate2, "interpolate2");
+		QuaternionScreenPrintf(0, 60, interpolate3, "interpolate3");
+		QuaternionScreenPrintf(0, 80, interpolate4, "interpolate4");
 
 		///
 		/// ↑描画処理ここまで
