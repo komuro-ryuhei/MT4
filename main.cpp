@@ -17,8 +17,11 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
 	// 補間用のスケール
 	float scale0, scale1;
 
-	// 内積が1に近い場合（角度が非常に小さい場合）、線形補間を利用
-	if (dot > 0.9995f) {
+	// 極小値の閾値
+	const float EPSILON = 0.0001f;
+
+	// 内積が1に非常に近い場合、線形補間を使用
+	if (1.0f - dot < EPSILON) {
 		scale0 = 1.0f - t;
 		scale1 = t;
 	} else {
@@ -34,6 +37,7 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
 	// 補間結果を計算
 	return {scale0 * q0.x + scale1 * q1Adjusted.x, scale0 * q0.y + scale1 * q1Adjusted.y, scale0 * q0.z + scale1 * q1Adjusted.z, scale0 * q0.w + scale1 * q1Adjusted.w};
 }
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -59,7 +63,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		// クォータニオンの初期設定
 		Quaternion rotation0 = MakeRotateAxisAngleQuaternion({0.71f, 0.71f, 0.0f}, 0.3f);
-		Quaternion rotation1 = MakeRotateAxisAngleQuaternion({0.71f, 0.0f, 0.71f}, 3.141592f);
+		Quaternion rotation1 = {-rotation0.x, -rotation0.y, -rotation0.z, -rotation0.w};
 
 		Quaternion interpolate0 = Slerp(rotation0, rotation1, 0.0f);
 		Quaternion interpolate1 = Slerp(rotation0, rotation1, 0.3f);

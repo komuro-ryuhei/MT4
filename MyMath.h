@@ -14,6 +14,15 @@ struct Quaternion {
 	float x, y, z, w;
 };
 
+Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs) { return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w}; }
+
+Quaternion operator*(float scalar, const Quaternion& quaternion) { return {scalar * quaternion.x, scalar * quaternion.y, scalar * quaternion.z, scalar * quaternion.w}; }
+
+// スカラー積 (Quaternion * float)
+Quaternion operator*(const Quaternion& quaternion, float scalar) {
+	return scalar * quaternion;
+}
+
 // 表示(Vector3)
 void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) {
 
