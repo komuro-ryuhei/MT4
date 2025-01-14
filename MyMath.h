@@ -9,6 +9,10 @@
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
+struct Quaternion {
+	float x, y, z, w;
+};
+
 // 表示(Vector3)
 void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) {
 
@@ -25,6 +29,16 @@ void MatrixScreenPrintf(int x, int y, Matrix4x4 matrix) {
 			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight, "%.03f", matrix.m[row][column]);
 		}
 	}
+}
+
+// 表示(Quaternion)
+void QuaternionScreenPrintf(int x, int y, const Quaternion& quaternion, const char* label) {
+
+	Novice::ScreenPrintf(x, y, "%3.2f", quaternion.x);
+	Novice::ScreenPrintf(x + kColumnWidth, y, "%3.2f", quaternion.y);
+	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%3.2f", quaternion.z);
+	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%3.2f", quaternion.w);
+	Novice::ScreenPrintf(x + kColumnWidth * 4, y, "%s", label);
 }
 
 // 　加算(Vector3)
@@ -467,4 +481,37 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 	viewportMatrix.m[3][3] = 1.0f;
 
 	return viewportMatrix;
+}
+
+// クォータニオンの積
+Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
+	return {
+	    lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y, lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x, lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,
+	    lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z};
+}
+
+// 単位クォータニオン
+Quaternion IdentityQuaternion() { return {0.0f, 0.0f, 0.0f, 1.0f}; }
+
+// 共役
+Quaternion Conjugate(const Quaternion& quaternion) { return {-quaternion.x, -quaternion.y, -quaternion.z, quaternion.w}; }
+
+// ノルム
+float Norm(const Quaternion& quaternion) { return sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w); }
+
+// 正規化
+Quaternion Normalize(const Quaternion& quaternion) {
+	float norm = Norm(quaternion);
+	if (norm == 0.0f)
+		return quaternion;
+	return {quaternion.x / norm, quaternion.y / norm, quaternion.z / norm, quaternion.w / norm};
+}
+
+// 逆
+Quaternion Inverse(const Quaternion& quaternion) {
+	float normSq = Norm(quaternion) * Norm(quaternion);
+	if (normSq == 0.0f)
+		return quaternion;
+	Quaternion conjugate = Conjugate(quaternion);
+	return {conjugate.x / normSq, conjugate.y / normSq, conjugate.z / normSq, conjugate.w / normSq};
 }
