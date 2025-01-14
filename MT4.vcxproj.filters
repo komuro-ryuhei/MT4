@@ -106,6 +106,5 @@
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="Matrix.h" />
-    <ClInclude Include="MT4.h" />
   </ItemGroup>
 </Project>

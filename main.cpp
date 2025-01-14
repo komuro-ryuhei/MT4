@@ -1,5 +1,4 @@
 #include "MyMath.h"
-#include "MT4.h"
 #include <Novice.h>
 
 const char kWindowTitle[] = "コムロ_リュウヘイ";
